@@ -6,9 +6,9 @@
 
   const NOMBRES = { bezier: 'Bézier', hermite: 'Hermite', bspline: 'B-spline' };
   const DESCRIPCIONES = {
-    bezier: 'Cuatro puntos: dos extremos y dos controles para cambiar la forma.',
-    hermite: 'Dos extremos y dos manejadores para orientar sus tangentes.',
-    bspline: 'Seis puntos de control para construir una curva cúbica suave.',
+    bezier: 'Bézier (De Casteljau): 4 puntos — extremos y dos controles que tiran de la curva.',
+    hermite: 'Hermite: 2 extremos + 2 manejadores (tangentes) que orientan la salida y la llegada.',
+    bspline: 'B-spline cúbica (De Boor): 6 puntos de control; la curva pasa por el primero y el último.',
   };
 
   // Puntos iniciales de cada tipo de curva

@@ -2,7 +2,7 @@
 // Aquí está todo lo que "se ve y se toca": botones, sliders, arrastrar, zoom, guardar.
 (function (G) {
   const Chanka = (G.Chanka = G.Chanka || {});
-  const { Editor, Escena, Trazo, Matrices, Motivos, Archivo, Prendas, Vista360, Plantillas } = Chanka;
+  const { Editor, Escena, Trazo, Matrices, Motivos, Archivo, Prendas, Plantillas } = Chanka;
 
   const $ = id => document.getElementById(id);
   const limitar = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -15,7 +15,6 @@
   let zoom = 1, vx = 0, vy = 0;   // encuadre del lienzo
   let arrastre = null;            // lo que se está arrastrando ahora
   let guardados = [];
-  let visor360 = null;
   let modo = 'disenar', herramienta = 'pincel';   // pestaña y herramienta activas
 
   // =====================================================================
@@ -280,14 +279,12 @@
     });
   }
 
-  // ---------- Pestañas: diseñar / pintar / vista 360° ----------
+  // ---------- Pestañas: diseñar / pintar ----------
   function irAModo(m) {
     if (m === modo) return;
-    if (modo === 'vista') cerrarVisor();
     modo = m; document.body.dataset.modo = m;
     document.querySelectorAll('.tab').forEach(b => { const on = b.dataset.modo === m; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
     Editor.seleccionar(null); $('editarContorno').checked = false;
-    if (m === 'vista') abrir360();
     refrescar();
   }
   function elegirHerramienta(h) {
@@ -326,7 +323,7 @@
       }, true);
     }
 
-    $('vista').onchange = () => { Editor.guardarPaso(); estado().vista = $('vista').value; if (modo === 'vista') abrir360(); else dibujar(); };
+    $('vista').onchange = () => { Editor.guardarPaso(); estado().vista = $('vista').value; dibujar(); };
     $('nombre').onchange = () => { Editor.guardarPaso(); estado().name = $('nombre').value.trim() || 'Sin título'; syncControles(); };
     $('tipo').onchange = () => {
       if (Editor.motivo()) { Editor.cambiarTipo($('tipo').value); mensaje('Tipo cambiado; se restablecieron los puntos de este motivo.'); }
@@ -472,37 +469,7 @@
   }
 
   // =====================================================================
-  // 7. VISTA 360°
-  // =====================================================================
-  const urlSvg = svg => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(svg));
-
-  function cerrarVisor() {
-    if (visor360) visor360.detener();
-    visor360 = null; $('visor').hidden = true; $('lienzo').hidden = false;
-  }
-  function abrir360() {
-    try {
-      $('editarContorno').checked = false; Editor.seleccionar(null); dibujar();
-      const s = estado();
-      const frente = Archivo.svgLimpio($('lienzo'));
-      const espalda = document.createElementNS(Escena.NS, 'svg');
-      Escena.dibujar(espalda, { ...s, vista: 'boceto', paint: [] }, {});
-      let borde = Escena.contorno(s);
-      if (borde.length > 120) borde = borde.filter((_, i) => i % Math.ceil(borde.length / 120) === 0);
-      if (visor360) visor360.detener();
-      visor360 = Vista360.iniciar($('orbita'), borde, urlSvg(frente), urlSvg(Archivo.svgLimpio(espalda)));
-      $('lienzo').hidden = true; $('visor').hidden = false;
-      mensaje('Vista 360°: espalda y espesor estimados.');
-    } catch (err) { irAModo('disenar'); mensaje(err.message); }
-  }
-  function conectar360() {
-    for (const [id, angulo] of [['vFrente', 0], ['vEspalda', Math.PI], ['vIzq', -Math.PI / 2], ['vDer', Math.PI / 2]]) {
-      $(id).onclick = () => { if (visor360) visor360.fijarAngulo(angulo); };
-    }
-  }
-
-  // =====================================================================
-  // 8. INICIO
+  // 7. INICIO
   // =====================================================================
   function iniciar() {
     construirPrendas(); construirGaleria(); construirPlantillas();
@@ -516,7 +483,7 @@
     document.querySelectorAll('.tab').forEach(b => { b.onclick = () => irAModo(b.dataset.modo); });
     $('hPincel').onclick = () => elegirHerramienta('pincel');
     $('hBorrador').onclick = () => elegirHerramienta('borrador');
-    conectarControles(); conectarBarra(); conectar360();
+    conectarControles(); conectarBarra();
 
     const svg = $('lienzo');
     svg.addEventListener('pointerdown', alPulsar);

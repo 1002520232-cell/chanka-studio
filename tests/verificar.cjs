@@ -2,9 +2,9 @@
 // No necesita instalar nada ni abrir el navegador. Comprueba las matemáticas y la lógica del editor.
 const path = require('path');
 const orden = ['curvas/bezier', 'curvas/hermite', 'curvas/bspline', 'geometria/matrices', 'geometria/trazo',
-  'render/prendas', 'render/webgl', 'editor/motivos', 'editor/plantillas', 'editor/archivo', 'editor/editor'];
+  'render/prendas', 'editor/motivos', 'editor/plantillas', 'editor/archivo', 'editor/editor'];
 orden.forEach(f => require(path.join(__dirname, '..', 'src', f + '.js')));
-const { Bezier, Hermite, Bspline, Matrices, Trazo, Prendas, Vista360, Motivos, Archivo, Editor } = globalThis.Chanka;
+const { Bezier, Hermite, Bspline, Matrices, Trazo, Prendas, Motivos, Archivo, Editor } = globalThis.Chanka;
 
 let bien = 0, mal = 0;
 function prueba(nombre, fn) {
@@ -95,13 +95,12 @@ prueba('el giro mantiene el centro del motivo en (x, y)', () => {
 
 console.log('\nPrendas');
 for (const id of Prendas.orden) {
-  prueba(`prenda «${id}»: contorno válido y triangulable (vista 360°)`, () => {
+  prueba(`prenda «${id}»: contorno válido`, () => {
     const p = Prendas.lista[id], pts = p.puntos.map(([x, y]) => P(x, y));
     cierto(pts.length >= 3, 'muy pocos puntos');
     cierto(pts.every(q => q.x >= 0 && q.x <= 800 && q.y >= 0 && q.y <= 800), 'puntos fuera del lienzo');
-    let borde = p.suave ? Trazo.suavizar(pts, p.tension, 8) : pts;
-    if (borde.length > 120) borde = borde.filter((_, i) => i % Math.ceil(borde.length / 120) === 0);
-    cierto(Vista360.triangular(borde).length === (borde.length - 2) * 3, 'triangulación incompleta');
+    const borde = p.suave ? Trazo.suavizar(pts, p.tension, 8) : pts;
+    cierto(borde.length >= 3 && borde.every(q => Number.isFinite(q.x) && Number.isFinite(q.y)), 'contorno inválido');
     p.detalles.forEach(d => cierto(d.p.length === 4, 'un detalle necesita 4 puntos'));
   });
 }

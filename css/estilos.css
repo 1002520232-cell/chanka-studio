@@ -64,16 +64,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
 #lienzo .editable { cursor: move; }
 #lienzo .handle { cursor: grab; }
 .resize-handle { cursor: nwse-resize; }
-#lienzo[hidden], #visor[hidden] { display: none !important; }
 .foot { display: flex; justify-content: space-between; gap: 10px; padding: 12px; font-size: 12px; }
 #metricas { white-space: nowrap; color: #8b7760; }
-
-/* ---------- Vista 360 ---------- */
-#visor { padding: 12px; background: #f1f7f4; }
-#visor h2 { font-size: 14px; }
-#visor p { font-size: 12px; line-height: 1.5; }
-#orbita { width: 100%; height: 55vh; background: #eef3f1; border-radius: 8px; touch-action: none; }
-.view-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
 
 /* ---------- Galería de motivos y paleta ---------- */
 .motif-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -121,7 +113,7 @@ dialog li { margin-bottom: 10px; line-height: 1.5; }
 /* ---------- Impresión: solo la prenda ---------- */
 @media print {
   body { background: #fff; }
-  header, aside, .worktop, .tabs, .toolbar, .zoom-bar, .foot, dialog, #visor { display: none !important; }
+  header, aside, .worktop, .tabs, .toolbar, .zoom-bar, .foot, dialog { display: none !important; }
   main { display: block; padding: 0; }
   .workspace { border: 0; box-shadow: none; }
   #canvasWrap { padding: 0; background: #fff; }
@@ -135,13 +127,10 @@ dialog li { margin-bottom: 10px; line-height: 1.5; }
 .tab { border-radius: 8px 8px 0 0; border-bottom: 0; background: #e8efec; }
 .tab.active { background: #fff; color: var(--accent); font-weight: 700; border-color: var(--accent); }
 body:not([data-modo=disenar]) .solo-disenar,
-body:not([data-modo=pintar]) .solo-pintar,
-body:not([data-modo=vista]) .solo-vista,
-body[data-modo=vista] .no-vista { display: none !important; }
+body:not([data-modo=pintar]) .solo-pintar { display: none !important; }
 body[data-modo=pintar] #lienzo { cursor: crosshair; }
 body[data-modo=pintar] #lienzo [data-curva] { pointer-events: none; }
 button.active { border-color: var(--accent); background: #f7eedf; }
-.view-buttons button { flex: 1 1 45%; }
 .plantillas { display: grid; gap: 6px; }
 .plantillas button { text-align: left; }
 details { margin: 10px 0; }

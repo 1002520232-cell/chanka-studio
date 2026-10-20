@@ -28,20 +28,17 @@ M = T(x + i·sepX, y + j·sepY) · R(giro) · S(tamaño) · T(−cx, −cy)
 ## Prendas
 Cada prenda es una lista de puntos (en un lienzo de 800×800) más detalles Bézier. Si `suave` es verdadero, el contorno se redondea con un Bézier entre cada par de puntos (Catmull-Rom convertido a Bézier, controlado por `tension`). El contorno es editable: se guarda en el diseño.
 
-## Vista 360°
-`webgl.js` triangula el contorno por recorte de orejas, arma dos caras con curvatura suave más los costados, y gira la figura con WebGL. La textura del frente es el SVG del editor y la de la espalda es un boceto con los motivos. No simula tela.
-
 ## Guardado
-JSON con nombre, id, prenda, color, contorno, foto de referencia (si hay), vista y motivos. `Archivo.validar` revisa formato, tipos, rangos y cantidades antes de abrir un archivo. Los diseños de la versión 1 se convierten con `Archivo.migrar`.
+JSON con nombre, id, prenda, color, contorno, foto de referencia (si hay), vista (textura/boceto) y motivos. `Archivo.validar` revisa formato, tipos, rangos y cantidades antes de abrir un archivo. Los diseños de la versión 1 se convierten con `Archivo.migrar`.
 
 ## Pintura y plantillas
 La pintura se guarda en `paint`: lista de trazos `{id, color, width, op, pts}` (hasta 500, 1500 puntos al dibujar). Al soltar el pincel, `Trazo.alisar` corta esquinas (Chaikin) y se dibuja recortada a la prenda, bajo los motivos. El borrador quita el trazo pulsado. Las plantillas (`editor/plantillas.js`) son funciones que devuelven motivos creados con `Motivos.desdePreset`; `Editor.aplicarPlantilla` guarda un paso de historial, así Ctrl+Z las deshace. Los diseños sin `paint` siguen abriendo.
 
 ## Pruebas
-`node tests/verificar.cjs` → 36 comprobaciones (curvas, matrices, trazo, las 11 prendas, editor, archivos). No sustituyen una prueba en navegador real.
+`node tests/verificar.cjs` → comprobaciones de curvas, matrices, trazo, prendas, editor y archivos. No sustituyen una prueba en navegador real.
 
 ## Límites
 - Muestras fijas: 100 segmentos por curva.
 - Repeticiones de 1 a 10 por dirección; demasiadas copias bajan el rendimiento.
 - Prendas esquemáticas; sin medidas de confección ni física de tela.
-- WebGL y arrastre táctil sin probar en navegador real.
+- Arrastre táctil conviene comprobarlo en Chrome o Edge.

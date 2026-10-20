@@ -16,9 +16,8 @@ Editor web para diseñar **cualquier prenda** (poncho, chompa, polera, casaca, c
 6. **Guardar** (en el navegador), **Descargar editable** (.json), **Exportar SVG** o **Imprimir**.
 
 ## Pestañas
-- **Diseñar:** prendas, plantillas, motivos, curvas y repeticiones. Atajos: Ctrl+D duplicar, Supr eliminar, flechas mover (Mayús = más rápido), botones *Al frente / Atrás* para las capas, y *Cuadrícula y eje* como guía.
+- **Diseñar:** prendas, plantillas, motivos con curvas Bézier / Hermite / B-spline, repeticiones y acabado (textura o boceto). Atajos: Ctrl+D, Supr, flechas, *Al frente / Atrás*, *Cuadrícula y eje*.
 - **Pintar:** pincel (color, grosor, opacidad) y borrador de trazos, a mano alzada y recortado a la prenda.
-- **Vista 360°:** la prenda girando, con botones de frente, espalda y costados, y el acabado (textura o boceto).
 - **Plantillas:** composiciones listas (franjas, borde de picos, gotas, simétrico, olas) que se editan después.
 - **Exportar:** SVG, PNG (1600 px) o imprimir.
 
@@ -38,8 +37,7 @@ chanka-studio/
 │   │   └── trazo.js        Curvas → puntos; copias, repeticiones y espejo
 │   ├── render/
 │   │   ├── prendas.js      Catálogo de prendas (solo datos)
-│   │   ├── escena.js       Dibuja prenda y motivos en SVG
-│   │   └── webgl.js        Vista 360° aproximada
+│   │   └── escena.js       Dibuja prenda y motivos en SVG
 │   ├── editor/
 │   │   ├── motivos.js      Motivos de la galería
 │   │   ├── plantillas.js   Diseños de partida
@@ -62,7 +60,6 @@ node tests/verificar.cjs
 
 ## Límites (para ser honestos en la sustentación)
 - Las prendas son **esquemas 2D**, no patrones de corte ni medidas reales.
-- La **vista 360°** es una maqueta con volumen aproximado; la espalda es estimada. Usa WebGL y **no se ha probado en un navegador real**: probarla en el laboratorio.
 - Las pruebas automáticas y una simulación de la interfaz se ejecutaron sin errores, pero el arrastre con ratón/táctil debe comprobarse a mano en Chrome o Edge.
 - Los motivos son figuras geométricas de demostración, **no símbolos chanka históricos acreditados**.
 - «Cerrar y rellenar» une los extremos con una recta; no evita autointersecciones.
