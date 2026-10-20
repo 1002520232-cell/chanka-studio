@@ -1,11 +1,14 @@
 # Chanka Studio — editor de diseño textil 2D
 
+> **Actualización:** incluye pantalla de login de demostración y control de puntos con cámara y gestos de pinza; la cámara ahora puede activarse incluso sin curvas añadidas y muestra errores comprensibles. Lee **[GUIA_LOGIN_Y_CAMARA.md](GUIA_LOGIN_Y_CAMARA.md)** para ejecutarlo, entrar, registrarte y usar la webcam. Para la cámara se requiere **localhost o HTTPS**, internet para descargar MediaPipe y permiso del usuario. El login es **solo local** y no sustituye una autenticación real de servidor.
+
+
 Editor web para diseñar **cualquier prenda** (poncho, chompa, polera, casaca, chaleco, pantalón, falda, vestido, gorro, manta o una prenda libre) y decorarla con motivos hechos con curvas **Bézier, Hermite y B-spline**. Las curvas están programadas desde cero (De Casteljau, funciones base de Hermite y De Boor), sin bibliotecas.
 
 ## Cómo abrirlo
 1. Descarga o clona el repositorio.
 2. Abre la carpeta en Visual Studio Code.
-3. Abre `index.html` con doble clic (Chrome, Edge o Firefox). No hay que instalar nada ni tener internet.
+3. Para usar **login y cámara** en VS Code, instala **Live Server**, abre `index.html` con **Open with Live Server** y entra en `http://127.0.0.1:5500/index.html` en Chrome o Edge. No necesitas Python. La cámara descarga un detector desde CDN (requiere internet). Si falla, abre `probar_camara.html` desde Live Server para revisar el permiso de webcam por separado.
 
 ## Cómo diseñar
 1. **Elige una prenda** a la izquierda. Cambiar de prenda conserva tus motivos.
@@ -56,7 +59,7 @@ Abre `src/render/prendas.js`, copia una prenda existente, cambia sus puntos y ag
 ```
 node tests/verificar.cjs
 ```
-39 comprobaciones de curvas, matrices, motivos, prendas, editor y archivos.
+39 comprobaciones de curvas, matrices, motivos, prendas, editor y archivos, además de 12 comprobaciones nuevas de gestos y perfiles mediante `node tests/nuevas_funciones.cjs`, y 7 pruebas de integración mano/editor mediante `node tests/prueba_mano_editor.cjs`.
 
 ## Límites (para ser honestos en la sustentación)
 - Las prendas son **esquemas 2D**, no patrones de corte ni medidas reales.
@@ -64,6 +67,8 @@ node tests/verificar.cjs
 - Los motivos son figuras geométricas de demostración, **no símbolos chanka históricos acreditados**.
 - «Cerrar y rellenar» une los extremos con una recta; no evita autointersecciones.
 - Guardar usa el navegador (se puede perder al limpiar datos): descarga siempre el `.json`.
+- El inicio de sesión es **local y de demostración**, no apto para proteger datos reales ni para cuentas compartidas por internet.
+- El seguimiento de manos requiere conexión para obtener MediaPipe, permisos de cámara y pruebas con una webcam física.
 - Si usas una foto, asegúrate de tener permiso de uso.
 
 ## Equipo y asistencia de IA

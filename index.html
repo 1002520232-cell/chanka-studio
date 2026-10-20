@@ -6,11 +6,38 @@
   <title>Chanka Studio — diseño textil 2D</title>
   <link rel="stylesheet" href="css/estilos.css">
 </head>
-<body data-modo="disenar">
+<body data-modo="disenar" class="bloqueado">
+
+<!-- Control de acceso de demostración (datos locales, sin servidor) -->
+<section id="pantallaAcceso" class="auth-screen" aria-labelledby="authTitulo">
+  <div class="auth-card">
+    <span class="brand">CHANKA <b>STUDIO</b></span>
+    <p class="auth-tagline">Diseña textiles con curvas matemáticas</p>
+    <h1 id="authTitulo">Iniciar sesión</h1>
+    <form id="formAcceso">
+      <div id="campoNombre" hidden>
+        <label for="nombreUsuario">Tu nombre</label>
+        <input id="nombreUsuario" type="text" autocomplete="name" maxlength="60" placeholder="Escribe tu nombre">
+      </div>
+      <label for="correoUsuario">Correo electrónico</label>
+      <input id="correoUsuario" type="email" autocomplete="username" required maxlength="120" placeholder="nombre@correo.com">
+      <label for="claveUsuario">Contraseña</label>
+      <input id="claveUsuario" type="password" autocomplete="current-password" required minlength="8" placeholder="Mínimo 8 caracteres">
+      <p id="authEstado" role="status" aria-live="polite"></p>
+      <button id="enviarAuth" type="submit" class="primary">Iniciar sesión</button>
+    </form>
+    <button type="button" id="cambiarAuth" class="link-button">Crear una cuenta</button>
+    <div class="auth-separator"><span>o</span></div>
+    <button id="entrarInvitado" type="button">Continuar como invitado</button>
+    <p class="auth-nota">Versión de demostración: las cuentas y los diseños se guardan solo en este navegador. No utiliza un servidor de autenticación.</p>
+  </div>
+</section>
 
 <header>
   <div><span class="brand">CHANKA <b>STUDIO</b></span><small>Diseño textil en vectores · Andahuaylas</small></div>
   <div class="topactions">
+    <span class="session-label">👤 <span id="usuarioActivo"></span></span>
+    <button id="cerrarSesion" title="Cerrar sesión">Salir</button>
     <button id="nuevo">Nuevo</button>
     <button id="guardar">Guardar</button>
     <button id="descargar">Descargar editable</button>
@@ -80,6 +107,14 @@
       <label class="inline"><input type="checkbox" id="puntos"> Editar puntos</label>
       <button id="ayuda">Cómo usar</button>
     </div>
+    <div class="hands-bar solo-disenar">
+      <button id="botonCamara" type="button">📷 Activar cámara y mano</button>
+      <span>Permite la webcam en el navegador; apunta con el índice y <strong>junta índice y pulgar</strong> para arrastrar. Puedes activar la cámara incluso sin curvas. <a href="probar_camara.html" target="_blank" rel="noopener">¿No abre? Probar solo webcam</a></span>
+      <div id="panelCamara" class="camera-panel" hidden>
+        <video id="videoMano" autoplay muted playsinline aria-label="Vista de la cámara, efecto espejo"></video>
+        <div class="camera-copy" id="mensajeCamara" role="status" aria-live="polite">Cámara desactivada.</div>
+      </div>
+    </div>
     <div class="zoom-bar">
       <button id="zoomMenos" aria-label="Alejar">🔍 −</button>
       <output id="zoomValor">100%</output>
@@ -89,6 +124,7 @@
     </div>
 
     <div id="canvasWrap">
+      <span id="cursorMano" hidden aria-hidden="true"></span>
       <svg id="lienzo" viewBox="0 0 800 800" role="img" aria-label="Área de diseño textil editable"></svg>
     </div>
     <div class="foot"><span id="estado" role="status" aria-live="polite">Listo para diseñar.</span><span id="metricas"></span></div>
@@ -161,6 +197,7 @@
     <li>Muévelo, cámbiale el tamaño con la esquina, el giro y el color. Activa «Espejo» para hacerlo simétrico.</li>
     <li>Prueba una <b>plantilla</b> a la izquierda, o usa «Repeticiones» para armar franjas.</li>
     <li>En la pestaña <b>Pintar</b> dibujas a mano alzada sobre la prenda.</li>
+    <li>Activa <b>Cámara y mano</b> para mover puntos: muestra una curva, apunta con el índice, junta los dedos para tomar un punto y sepáralos para soltarlo. También funciona con los puntos del contorno.</li>
     <li>Guarda, descarga el editable, exporta SVG o imprime.</li>
   </ol>
   <p>Ctrl+Z / Ctrl+Y: deshacer / rehacer · Ctrl+D: duplicar · Supr: eliminar · Flechas: mover el motivo (Mayús = más rápido). Las prendas son esquemas 2D, no patrones de corte. Las curvas usan De Casteljau (Bézier), bases de Hermite y De Boor (B-spline).</p>
@@ -180,6 +217,9 @@
 <script src="src/editor/archivo.js"></script>
 <script src="src/editor/editor.js"></script>
 <script src="src/ui/panel.js"></script>
+<script src="src/gestos.js"></script>
+<script src="src/manos.js"></script>
+<script src="src/auth.js"></script>
 <script src="src/main.js"></script>
 </body>
 </html>

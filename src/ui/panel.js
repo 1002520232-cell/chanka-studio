@@ -14,6 +14,7 @@
 
   let zoom = 1, vx = 0, vy = 0;   // encuadre del lienzo
   let arrastre = null;            // lo que se está arrastrando ahora
+  let arrastreMano = null;        // punto de curva o contorno sostenido por pinza
   let guardados = [];
   let modo = 'disenar', herramienta = 'pincel';   // pestaña y herramienta activas
 
@@ -188,7 +189,67 @@
   }
 
   // =====================================================================
-  // 4. GALERÍA DE MOTIVOS (arrastrar o pulsar)
+  // 4. EDITAR PUNTOS DE CONTROL MEDIANTE LA CÁMARA
+  // =====================================================================
+  function prepararMano() {
+    if (modo !== 'disenar') irAModo('disenar');
+    if (!$('editarContorno').checked) {
+      $('puntos').checked = true;
+      if (!Editor.motivo() && estado().curves.length) Editor.seleccionar(estado().curves.at(-1).id);
+    }
+    refrescar();
+  }
+
+  function puntoCercano(pos) {
+    const maxDistancia = 56 / zoom;
+    let mejor = null, distanciaMin = maxDistancia;
+    if ($('editarContorno').checked) {
+      estado().contour.forEach((q, i) => {
+        const d = Math.hypot(pos.x - q.x, pos.y - q.y);
+        if (d < distanciaMin) { mejor = { tipo: 'contorno', i }; distanciaMin = d; }
+      });
+    } else {
+      for (const c of (Editor.motivo() ? [Editor.motivo()] : [])) {
+        c.points.forEach((p, i) => {
+          const q = Matrices.aplicar(Trazo.matrizMotivo(c, 0, 0), p);
+          const d = Math.hypot(pos.x - q.x, pos.y - q.y);
+          if (d < distanciaMin) { mejor = { tipo: 'punto', id: c.id, i }; distanciaMin = d; }
+        });
+      }
+    }
+    return mejor;
+  }
+
+  // La posición p de la mano se expresa entre 0 y 1 sobre el lienzo visible.
+  // Una única operación de pinza equivale a un solo paso de Deshacer.
+  function gestoMano(p, agarrar) {
+    if (!p || !agarrar || modo !== 'disenar') {
+      if (arrastreMano) mensaje('Punto colocado. Puedes deshacer con Ctrl+Z.');
+      arrastreMano = null;
+      return;
+    }
+    const pos = { x: vx + p.x * 800 / zoom, y: vy + p.y * 800 / zoom };
+    if (!arrastreMano) {
+      arrastreMano = puntoCercano(pos);
+      if (!arrastreMano) return;
+      Editor.guardarPaso();
+      if (arrastreMano.tipo === 'punto') Editor.seleccionar(arrastreMano.id);
+      else Editor.elegirPuntoContorno(arrastreMano.i);
+      syncControles();
+    }
+    const q = { x: limitar(pos.x, 0, 800), y: limitar(pos.y, 0, 800) };
+    if (arrastreMano.tipo === 'contorno') {
+      estado().contour[arrastreMano.i] = q;
+    } else {
+      const c = estado().curves.find(v => v.id === arrastreMano.id);
+      if (!c || !c.points[arrastreMano.i]) { arrastreMano = null; return; }
+      c.points[arrastreMano.i] = Matrices.aplicar(Matrices.inversa(Trazo.matrizMotivo(c, 0, 0)), q);
+    }
+    dibujar();
+  }
+
+  // =====================================================================
+  // 5. GALERÍA DE MOTIVOS (arrastrar o pulsar)
   // =====================================================================
   function ponerMotivo(indice, pos) {
     const op = { color: $('color').value, width: Number($('grosor').value) };
@@ -282,6 +343,7 @@
   // ---------- Pestañas: diseñar / pintar ----------
   function irAModo(m) {
     if (m === modo) return;
+    if (m !== 'disenar' && Chanka.Manos) Chanka.Manos.detener();
     modo = m; document.body.dataset.modo = m;
     document.querySelectorAll('.tab').forEach(b => { const on = b.dataset.modo === m; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
     Editor.seleccionar(null); $('editarContorno').checked = false;
@@ -510,7 +572,8 @@
     guardados = Archivo.leerGuardados();
     dibujarGuardados();
     refrescar();
+    Chanka.Manos.iniciar();
   }
 
-  Chanka.Panel = { iniciar };
+  Chanka.Panel = { iniciar, prepararMano, gestoMano };
 })(typeof window !== 'undefined' ? window : globalThis);

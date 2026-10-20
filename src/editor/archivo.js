@@ -5,6 +5,12 @@
   const { Prendas, Trazo, Motivos } = Chanka;
   const CLAVE = 'chanka-designs-v2';
   const CLAVE_ANTIGUA = 'chanka-designs-v1';
+  let usuarioActual = 'invitado';
+  function establecerUsuario(id) {
+    if (typeof id !== 'string' || !/^[a-zA-Z0-9-]{1,80}$/.test(id)) throw new Error('Usuario no válido');
+    usuarioActual = id;
+  }
+  const claveGuardados = () => usuarioActual === 'invitado' ? CLAVE : CLAVE + ':' + usuarioActual;
 
   // ¿Este objeto es un diseño válido? (se usa antes de abrir cualquier archivo)
   function validar(s) {
@@ -61,11 +67,14 @@
   // ----- Guardado en el navegador -----
   function leerGuardados() {
     const leer = clave => { try { const d = JSON.parse(localStorage.getItem(clave) || '[]'); return Array.isArray(d) ? d : []; } catch { return []; } };
-    const lista = [...leer(CLAVE), ...leer(CLAVE_ANTIGUA).map(migrar)].filter(validar);
+    // El perfil invitado conserva los guardados del proyecto original.
+    const lista = (usuarioActual === 'invitado'
+      ? [...leer(CLAVE), ...leer(CLAVE_ANTIGUA).map(migrar)]
+      : leer(claveGuardados())).filter(validar);
     return lista.filter((s, i) => lista.findIndex(o => o.id === s.id) === i);
   }
   function escribirGuardados(lista) {
-    try { localStorage.setItem(CLAVE, JSON.stringify(lista)); return true; } catch { return false; }
+    try { localStorage.setItem(claveGuardados(), JSON.stringify(lista)); return true; } catch { return false; }
   }
 
   // ----- Descargas -----
@@ -100,5 +109,5 @@
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgComoTexto(svg));
   }
 
-  Chanka.Archivo = { validar, migrar, exportarPng, leerGuardados, escribirGuardados, descargar, nombreSeguro, svgLimpio, svgComoTexto };
+  Chanka.Archivo = { validar, migrar, exportarPng, leerGuardados, escribirGuardados, establecerUsuario, descargar, nombreSeguro, svgLimpio, svgComoTexto };
 })(typeof window !== 'undefined' ? window : globalThis);

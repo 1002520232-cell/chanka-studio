@@ -1,2 +1,2 @@
-// MAIN — punto de entrada: arranca la interfaz cuando la página está lista
-document.addEventListener('DOMContentLoaded', () => Chanka.Panel.iniciar());
+// MAIN — autenticar primero, arrancar el editor solo con sesión activa.
+document.addEventListener('DOMContentLoaded', () => Chanka.Auth.iniciar());

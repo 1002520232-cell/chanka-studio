@@ -135,3 +135,51 @@ button.active { border-color: var(--accent); background: #f7eedf; }
 .plantillas button { text-align: left; }
 details { margin: 10px 0; }
 summary { cursor: pointer; font-weight: 600; font-size: 13px; color: var(--teal); }
+
+/* ---------- Acceso y cuentas de demostración ---------- */
+body.bloqueado > header, body.bloqueado > main { display: none !important; }
+.auth-screen[hidden], #panelCamara[hidden], #cursorMano[hidden], #campoNombre[hidden] { display: none !important; }
+.auth-screen {
+  position: fixed; inset: 0; z-index: 2000; padding: 24px;
+  display: grid; place-items: center; overflow: auto;
+  background: radial-gradient(ellipse at 10% 0%, #428b89, transparent 55%),
+              radial-gradient(ellipse at 95% 100%, #ad6478, transparent 48%), #163e43;
+}
+.auth-card {
+  width: min(100%, 440px); padding: 32px; border-radius: 20px;
+  background: #fffdf9; box-shadow: 0 25px 80px #0005;
+}
+.auth-card .brand { display: block; color: #622a3d; font-size: 25px; }
+.auth-card .brand b { color: #ae8540; }
+.auth-tagline { color: #796f64; margin: 6px 0 26px; }
+.auth-card h1 { color: #205b62; font-size: 23px; margin: 0 0 20px; }
+.auth-card label { margin: 14px 0 5px; }
+.auth-card input[type=email], .auth-card input[type=password], .auth-card input[type=text] {
+  display: block; border: 1px solid #cfdad5; background: #fff; border-radius: 9px;
+  padding: 12px; width: 100%; font: inherit;
+}
+.auth-card #enviarAuth, .auth-card #entrarInvitado { width: 100%; margin-top: 9px; padding: 12px; }
+.auth-card #enviarAuth { margin-top: 12px; }
+#authEstado { min-height: 20px; margin: 10px 0 0; color: #992e4c; font-size: 12px; }
+.auth-card .link-button { background: transparent; border: 0; color: #225c70; text-decoration: underline; width: 100%; }
+.auth-separator { display: flex; align-items: center; gap: 12px; margin-top: 10px; color: #857f77; }
+.auth-separator::before, .auth-separator::after { content: ''; height: 1px; background: #dddcd7; flex: 1; }
+.auth-nota { color: #6c716d; font-size: 11px; line-height: 1.5; margin-bottom: 0; }
+.session-label { align-self: center; color: #f6e2bf; font-weight: 700; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- Mano / cámara ---------- */
+.hands-bar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 12px;
+  background: #fbf2e3; border-top: 1px solid #e7d8bf; border-bottom: 1px solid #e7d8bf;
+  font-size: 12px; color: #564634;
+}
+.hands-bar > button { background: #236c71; border-color: #236c71; color: white; font-weight: 700; }
+.hands-bar > button:hover, .hands-bar > button.active { background: #18494d; color: white; }
+.camera-panel { display: flex; gap: 12px; align-items: center; width: 100%; }
+#videoMano { width: 164px; max-width: 45%; aspect-ratio: 4 / 3; background: #1b2828; border-radius: 8px; object-fit: cover; transform: scaleX(-1); }
+.camera-copy { font-size: 12px; flex: 1; }
+#canvasWrap { position: relative; }
+#cursorMano { position: absolute; width: 24px; height: 24px; border: 3px solid #b22255; border-radius: 50%; transform: translate(-50%, -50%); background: #f8e1e466; pointer-events: none; z-index: 5; box-shadow: 0 0 0 2px white; }
+#cursorMano.agarrando { background: #40bcb4aa; border-color: #05655e; box-shadow: 0 0 0 6px #28a29a44; }
+@media (max-width: 620px) { .auth-card { padding: 22px; } .hands-bar { align-items: flex-start; } }
+@media print { .hands-bar, .auth-screen, #cursorMano, .camera-panel { display: none !important; } }

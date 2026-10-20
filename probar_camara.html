@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Prueba de webcam — Chanka Studio</title>
+  <style>
+  body{font:16px/1.5 system-ui,-apple-system,sans-serif;color:#263e3a;background:#f5f4ef;margin:0;padding:24px}
+  main{max-width:650px;margin:30px auto;padding:25px;border:1px solid #d2dbd4;border-radius:14px;background:white}
+  h1{font-size:1.55rem}p{max-width:62ch}button{padding:11px 17px;border:0;border-radius:7px;background:#226c71;color:white;font-size:1rem;cursor:pointer;margin:5px 8px 5px 0}button:disabled{opacity:.45;cursor:default}
+  video{display:block;background:#172828;max-width:100%;width:480px;aspect-ratio:4/3;object-fit:cover;transform:scaleX(-1);border-radius:8px;margin:16px 0}
+  #estado{font-weight:600;min-height:2rem;overflow-wrap:anywhere}a{color:#16636b}
+  </style>
+</head>
+<body><main>
+  <h1>Diagnóstico de cámara — Chanka Studio</h1>
+  <p>Esta página solo prueba si Windows y tu navegador pueden abrir la webcam. <strong>No usa MediaPipe ni envía imágenes a internet.</strong></p>
+  <p id="direccion"></p>
+  <button id="probar">📷 Probar webcam</button><button id="apagar" disabled>⏹ Apagar</button>
+  <video id="video" autoplay muted playsinline aria-label="Prueba de la cámara"></video>
+  <p id="estado" role="status">Pulsa «Probar webcam» y acepta el permiso.</p>
+  <p>Si falla: usa Live Server (localhost o 127.0.0.1), permite la cámara en el candado del navegador y revisa en Windows <strong>Configuración → Privacidad y seguridad → Cámara</strong>.</p>
+  <a href="index.html">← Regresar a Chanka Studio</a>
+</main>
+<script>
+'use strict';
+let flujo = null;
+const $ = id => document.getElementById(id);
+$('direccion').textContent = 'Dirección actual: ' + location.href;
+function apagar() {
+  if (flujo) flujo.getTracks().forEach(t => t.stop());
+  flujo = null;
+  $('video').pause(); $('video').srcObject = null;
+  $('apagar').disabled = true; $('probar').disabled = false;
+}
+$('probar').onclick = async () => {
+  if (!isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    $('estado').textContent = 'Este origen no permite webcam. Abre con Live Server desde VS Code.';
+    return;
+  }
+  $('probar').disabled = true;
+  $('estado').textContent = 'Solicitando permiso… pulsa «Permitir» en el navegador.';
+  try {
+    flujo = await navigator.mediaDevices.getUserMedia({audio:false,video:true});
+    $('video').srcObject = flujo;
+    await $('video').play();
+    $('estado').textContent = '✓ Webcam funcionando. Si no reconoce la mano en Chanka Studio, revisa la conexión para MediaPipe.';
+    $('apagar').disabled = false;
+  } catch (e) {
+    apagar();
+    $('estado').textContent = 'Error: ' + (e.name === 'NotAllowedError'
+      ? 'Permiso denegado: permite la cámara desde el candado junto a la URL.'
+      : e.name === 'NotFoundError' ? 'No se encontró una webcam.'
+      : e.name === 'NotReadableError' ? 'La cámara está en uso o Windows la bloquea.' : (e.message || e.name));
+  }
+};
+$('apagar').onclick = () => { apagar(); $('estado').textContent = 'Cámara apagada.'; };
+window.addEventListener('pagehide', apagar);
+</script></body></html>
